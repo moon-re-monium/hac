@@ -39,6 +39,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function displayFilePreview(data) {
         // Assuming the data is a base64-encoded string
-        interactive.innerHTML = `<h2>File Preview</h2><pre>${data}</pre>`;
+        const binaryData = atob(data);
+        const byteArray = new Uint8Array(binaryData.length);
+        for (let i = 0; i < binaryData.length; i++) {
+            byteArray[i] = binaryData.charCodeAt(i);
+        }
+
+        const blob = new Blob([byteArray], { type: 'application/octet-stream' });
+        const objectURL = URL.createObjectURL(blob);
+
+        // Display the file using an anchor element
+        const downloadLink = document.createElement('a');
+        downloadLink.href = objectURL;
+        downloadLink.download = 'downloaded_file';
+        downloadLink.textContent = 'Download File';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+
+        // Clean up
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(objectURL);
     }
 });
